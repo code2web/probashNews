@@ -85,8 +85,7 @@
                   @endif
                 </tbody> --}}
                 <tbody>
-                  @if($categories->count())
-                  @foreach ($categories as $key => $category)
+                  @forelse ($categories as $key => $category)
                   <tr>
                     <td>{{$key+1}}</td>
                     <td>{{$category->name}}</td>
@@ -111,9 +110,8 @@
                         <i class="fas fa-times"></i>
                       </a>
                     </td>
-                  </tr> 
-                  @endforeach
-                  @else
+                  </tr>
+                  @empty
                   <tr>
                     <td colspan="4">
                       <h5 class="text-center">
@@ -121,7 +119,7 @@
                       </h5>
                     </td>
                   </tr>
-                  @endif
+                  @endforelse                  
                 </tbody>
                 </table>
                 {!!$categories->links()!!}

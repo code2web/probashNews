@@ -1,4 +1,5 @@
 {{-- @extends('admin.layout_crud') --}}
+
 @extends('admin.layout')
 @section('content')
 <!-- Content Header (Page header) -->
@@ -28,7 +29,8 @@
           <div class="card-header d-flex justify-content-between">
             <h3 class="card-title">Article List</h3>
             <!-- Button trigger modal -->
-            <a href="" class="btn btn-primary ml-auto" data-bs-toggle="modal" data-bs-target="#createModal">
+            {{-- <a href="{{route('article.create')}}" id="create_modal" class="btn btn-primary ml-auto" data-bs-toggle="modal" data-bs-target="#createModal"> --}}
+            <a formActionUrl="{{ route('article.store') }}" title="Creating" href="{{route('article.create')}}" id="BootModalShow" class="btn btn-primary ml-auto">
               Create Article
             </a>
             {{-- <h3 class="card-title">Create article</h3> --}}
@@ -50,63 +52,38 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @if($articles->count())
-                  @foreach ($articles as $key => $article)
+                  @forelse($articles as $key => $article)
                   <tr>
-                    <td>{{$key+1}}</td>
+                    <td>{{++$key}}</td>
                     <td>{{$article->title}}</td>
                     <td>{{$article->content}}</td>
-                    {{-- <td>{{$article->content->limit('5')}}</td> --}}
-                    {{-- <div style="max-height: 70px; max-width: 70px; overflow: hidden;"></div>
-                    <img src="" alt="" class="img-fluid"> --}}
                     <td>
-                      <div>
-                        <img src="{{asset($article->thumbnail)}}" class="img-fluid" alt="">
-                      </div>
+                      {{-- <div> --}}
+                        <img src="{{asset('storage/article/'.$article->thumbnail)}}" class="thumbnail img-fluid" style="height: 50px; object-fit: contain;">
+                      {{-- </div> --}}
                     </td>
-                    <td>{{$article->category?->name}}</td>
-                    <td>{{$article->district?->name}}</td>
-                    <td>{{$article->user?->name}}</td>
+                    <td>hello}</td>
+                    <td>hello}</td>
+                    <td>hello}</td>
 
-                    {{-- <td>
-                      <div class="progress progress-xs">
-                        <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-                      </div>
-                    </td> --}}
+                    
                     <td class="d-flex">
-                      <a href="" class="btn btn-success mr-1 update_article_form"
-                        data-bs-toggle="modal" 
-                        data-bs-target="#updateModal"
-                      
-                        data-id="{{ $article->id }}"
-                        data-title="{{ $article->title }}"
-                        data-content="{{ $article->content }}"
-                        {{-- data-thumbnail="{{ $article->thumbnail }}" --}}
-                        data-category_id="{{ $article->category_id }}"
-                        data-district_id="{{ $article->district_id }}"
+                      <a formActionUrl="{{ route('article.update', $article->id) }}" title="Editing" href="{{ route('article.edit', $article->id) }}" id="BootModalShow" class="btn btn-success mr-1 update_article_form"
+                        
                         >
                         <i class="fas fa-edit"></i>
                       </a>
-                      <a href="" class="btn btn-danger delete_article"
-                        data-id="{{ $article->id }}"
+                      <a title="Delete" href="" class="btn btn-danger delete_article"
                       >
                         <i class="fas fa-times"></i>
                       </a>
                     </td>
-                  </tr> 
-                  @endforeach
-                  @else
-                  <tr>
-                    <td colspan="4">
-                      <h5 class="text-center">
-                        No Data Fount
-                      </h5>
-                    </td>
-                  </tr>
-                  @endif                                        
+                  </tr>                                   
+                  @empty
+                  <tr><td colspan="8" class="text-center text-danger"><b>No DATA</b></td></tr>
+                  @endforelse                                    
                 </tbody>
                 </table>
-                {!!$articles->links()!!}
               </div>
               <!-- /.card-body -->
             </div>
@@ -117,13 +94,105 @@
 </div>
 <!-- /.content -->
 
+{{-- @include('admin.article.create') --}}
+{{-- @include('admin.article.edit') --}}
 
-@include('admin.article.create')
-@include('admin.article.update')
-
-@include('admin.article.ajax')
-
-{!! Toastr::message() !!}
-
+{{-- @yield('content') --}}
 
 @endsection
+
+@section('scripts')
+{{-- <script src="{{asset('admin/plugins/jquery/jquery/jquery.min.js')}}"></script> --}}
+{{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
+
+<script>
+$(document).ready(function(){
+  let dialog = '';
+  let formUrl = '';
+  let formId = '';
+  let Modaltitle = '';
+  let successMsg = '';
+  // modal show
+  $(document).on('click', '#BootModalShow', function(e) {
+    e.preventDefault();
+    let ModalUrl = $(this).attr('href');
+    // alert(ModalUrl);
+    let Modaltitle = $(this).attr('title');
+    let formUrl = $(this).attr('formActionUrl');
+    
+    // ajax
+    $.ajax({
+      type: "GET",
+      url: ModalUrl,
+      success: function(res){
+          dialog = bootbox.dialog({
+          title: 'Article '+Modaltitle+' Form',
+          message: "<div class='ModalContent'></div>",
+          size: 'large',          
+        });
+        $('.ModalContent').html(res);
+        // formId
+        formId = '#'+$('.ModalContent').find('form').attr('id');
+      }
+    });
+  });
+
+  // imgage preview
+  $(document).on('change', '#thumbnail', function(e) {
+    e.preventDefault();
+    const file = this.files[0];
+    if (file) {
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        $('.img-preview').attr('src', e.target.result);
+      }
+      reader.readAsDataURL(file);
+    }    
+  });
+// jQuery.support.cors = true;
+  // form submit insert data
+  $(document).on('submit', formId, function(e) {
+    e.preventDefault();
+    let formData = new FormData($(formId)[0]);
+    // ajax
+    $.ajax({
+      type: "POST",
+      url: formUrl,
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(res){
+        console.log(res);
+        if (res.status == 400) 
+        {
+          $('.errors').html('');
+          $('.errors').removeClass('d-none');
+          
+          $('.titleError').text(res.errors.title);
+          $('.contentError').text(res.errors.content);
+          $('.thumbnailError').text(res.errors.thumbnail);
+
+          // $('.category_idError').text('res.errors.category_id');
+          // $('.district_idError').text('res.errors.district_id');
+        }
+        else
+        {
+          $('.errors').html('');
+          $('.errors').addClass('d-none');
+          $('.table').load(location.href+' .table');
+          dialog.modal('hide');
+          // formId == '#create_article_form' ? successMsg = 'Created' : successMsg = 'Updated';
+        }
+      }
+    });
+  });
+
+  
+
+
+
+});
+</script>
+@endsection
+
+{{-- @include('admin.article.ajax') --}}

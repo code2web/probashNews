@@ -248,3 +248,11 @@ Route::get('backup2',[ArticleController::class,'backup2'])->name('backup2');
 // https://www.google.com/search?q=how+to+img+center+in+bootstrap&oq=how+to+img+center+in+bootstrap&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDk5NDlqMGoxqAIAsAIA&sourceid=chrome&ie=UTF-8
 // https://www.google.com/search?q=Property+%5Btitle%5D+does+not+exist+on+this+collection+instance.%22%2C&oq=Property+%5Btitle%5D+does+not+exist+on+this+collection+instance.%22%2C&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDEyNjBqMGoxqAIAsAIA&sourceid=chrome&ie=UTF-8
 // public function edit(Article $article)
+
+
+// ekbar bootboxjs bebohar kore take bad dite chaile hoy na tar chace theke jay and eta sara kaj hoy na
+
+// https://youtu.be/KIQhDpmbFDo?list=PLQDioScEMUhlIO3FLwmTsKCunfj6CK1Le
+// laravel bootstrap jquery ajax image crud
+
+// @method('PUT') na dile from submit hoe insert hoy Update howar bodole.
